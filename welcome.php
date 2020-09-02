@@ -38,6 +38,11 @@ class Welcome extends Module
     private $onBoarding;
 
     /**
+     * @var bool
+     */
+    private $displayHeader = true;
+
+    /**
      * Module's constructor.
      */
     public function __construct()
@@ -62,6 +67,8 @@ class Welcome extends Module
         }
 
         if (Module::isInstalled($this->name)) {
+            $this->displayHeader = $this->smarty->getTemplateVars('display_header');
+
             $this->onBoarding = new OnBoarding(
                 $this->getTranslator(),
                 $this->smarty,
@@ -133,7 +140,7 @@ class Welcome extends Module
      */
     public function hookDisplayBackOfficeHeader()
     {
-        if (!$this->onBoarding->isFinished()) {
+        if ($this->displayHeader && !$this->onBoarding->isFinished()) {
             $this->context->controller->addCSS($this->_path.'public/module.css', 'all');
             $this->context->controller->addJS($this->_path.'public/module.js', 'all');
         }
@@ -144,7 +151,7 @@ class Welcome extends Module
      */
     public function hookDisplayAdminAfterHeader()
     {
-        if (!$this->onBoarding->isFinished()) {
+        if ($this->displayHeader && !$this->onBoarding->isFinished()) {
             $this->onBoarding->showModuleContent();
         }
     }
@@ -154,7 +161,7 @@ class Welcome extends Module
      */
     public function hookDisplayAdminNavBarBeforeEnd()
     {
-        if (!$this->onBoarding->isFinished()) {
+        if ($this->displayHeader &&!$this->onBoarding->isFinished()) {
             $this->onBoarding->showModuleContentForNavBar($this->context->link);
         }
     }
